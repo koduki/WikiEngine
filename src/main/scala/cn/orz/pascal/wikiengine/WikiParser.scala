@@ -6,13 +6,14 @@ import scala.util.parsing.input.CharSequenceReader
 
 class Document
 class Inline extends Document
-case class Text(s:String) extends Inline
-case class Strong(t:Text) extends Inline
-case class Line(l:List[Inline]) extends Document
-case class Headline(t:List[Inline]) extends Document
-case class Preformatted(s:String) extends Document
-case class Paragraph(p:List[Document]) extends Document
-case class Sentences(s:List[Document]) extends Document
+case class Text(str:String) extends Inline
+case class Strong(text:Text) extends Inline
+case class Link(text:Text, uri:Text) extends Inline
+case class Line(line:List[Inline]) extends Document
+case class Headline(text:List[Inline]) extends Document
+case class Preformatted(str:String) extends Document
+case class Paragraph(paragraph:List[Document]) extends Document
+case class Sentences(sentences:List[Document]) extends Document
 
 object WikiParser extends Parsers {
     type Elem = Char
@@ -24,6 +25,9 @@ object WikiParser extends Parsers {
     lazy val QUOT = elem('"')
     lazy val LF = elem('\n')
     lazy val TAB = elem('\t')
+    lazy val PIPE = elem('|')
+    lazy val BS = elem('[')
+    lazy val BE = elem(']')
 
     lazy val PRE_OPEN = str("<pre>")
     lazy val PRE_CLOSE = str("</pre>")
@@ -41,7 +45,11 @@ object WikiParser extends Parsers {
 
     def line: Parser[Line] = rep1(text | inline) ~ LF ^^ { xs => Line(xs._1)}
 
+    def link:Parser[Link] = BS ~ BS ~ rep(text ~ PIPE) ~ text ~ BE ~ BE ^^ { 
+        case b1 ~ b2 ~ List(text ~ b3) ~ uri ~ b4 ~ b5 => Link(text, uri)
+        case b1 ~ b2 ~ uri ~ b3 ~ b4 => Link(uri, uri) 
+    }
     def inline:Parser[Inline] = strong
     def strong:Parser[Strong] = QUOT ~ text ~ QUOT ^^ {xs => Strong(xs._1._2)}
-    def text: Parser[Text] = rep1(not(LF) ~> not(QUOT) ~> not(ASTRISK) ~> char) ^^ {cs => Text(cs.mkString)}
+    def text: Parser[Text] = rep1(not(LF) ~> not(QUOT) ~> not(ASTRISK) ~> not(BS) ~> not(BE) ~> not(PIPE) ~> char) ^^ {cs => Text(cs.mkString)}
 }
