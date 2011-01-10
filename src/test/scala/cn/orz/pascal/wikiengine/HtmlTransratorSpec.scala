@@ -13,6 +13,11 @@ object HtmlTransratorSpec extends Specification {
         HtmlTransrator.parse(ast) must_== "<strong>strong text</strong>"
     }
 
+    "link is a tag." in {
+        val ast = Link(Text("foobar"), Text("http://hoge.com")) 
+        HtmlTransrator.parse(ast) must_== "<a href='http://hoge.com'>foobar</a>"
+    }
+
     "Line eol is br tag." in {
         val ast = Line(List(Text("text"))) 
         HtmlTransrator.parse(ast) must_== "text<br />"
@@ -26,6 +31,11 @@ object HtmlTransratorSpec extends Specification {
    "headline is h1 tag." in {
         val ast = Headline(List(Text("Title1."))) 
         HtmlTransrator.parse(ast) must_== "<h1>Title1.</h1>"
+    }
+
+   "preformatted is pre tag." in {
+        val ast = Preformatted("  hello \n  world.") 
+        HtmlTransrator.parse(ast) must_== "<pre>  hello \n  world.</pre>"
     }
 
    "paragraph is p tag." in {
