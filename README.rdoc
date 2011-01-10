@@ -7,3 +7,14 @@ WikiEngine and HtmlTranslator.
 == BUILD:
   % sbt 
   > package 
+
+== EXAMPLE
+  hello                   => hello
+  "hello"                 => <strong>hello</strong>
+  [[http://bar.com]]      => <a href='http://bar.com'>http://bar.com</a>
+  [[foo|http://bar.com]]  => <a href='http://bar.com'>foo</a>
+  hello\n                 => hello<br />
+  *headline               => <h1>headline</h1>
+  <pre>...</pre>          => <pre>...</pre>
+  hello world... \n\n    => <p>hello world... </p>
+
