@@ -41,11 +41,11 @@ object WikiParserSpec extends Specification {
         }
 
         """ all text is Sentences.""" in {
-           WikiParser.sentences($("*Headline\nI \"love\" \nscala.\n\n<pre>Hello\n</pre>")).get must_== Sentences(List(
+           WikiParser.sentences($("*Headline\nI \"love\" \n[[scala|http://scala.com]].\n\n<pre>Hello\n</pre>")).get must_== Sentences(List(
                                                                         Headline(List(Text("Headline"))),
                                                                         Paragraph(List(
                                                                         Line(List(Text("I "), Strong(Text("love")), Text(" "))), 
-                                                                        Line(List(Text("scala."))))),
+                                                                        Line(List(Link(Text("scala"), Text("http://scala.com")),Text("."))))),
                                                                         Preformatted("Hello\n")
                                                                         ))
 

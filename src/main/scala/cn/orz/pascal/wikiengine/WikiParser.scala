@@ -45,11 +45,11 @@ object WikiParser extends Parsers {
 
     def line: Parser[Line] = rep1(text | inline) ~ LF ^^ { xs => Line(xs._1)}
 
+    def inline:Parser[Inline] = strong | link
     def link:Parser[Link] = BS ~ BS ~ rep(text ~ PIPE) ~ text ~ BE ~ BE ^^ { 
         case b1 ~ b2 ~ List(text ~ b3) ~ uri ~ b4 ~ b5 => Link(text, uri)
         case b1 ~ b2 ~ uri ~ b3 ~ b4 => Link(uri, uri) 
     }
-    def inline:Parser[Inline] = strong
     def strong:Parser[Strong] = QUOT ~ text ~ QUOT ^^ {xs => Strong(xs._1._2)}
     def text: Parser[Text] = rep1(not(LF) ~> not(QUOT) ~> not(ASTRISK) ~> not(BS) ~> not(BE) ~> not(PIPE) ~> char) ^^ {cs => Text(cs.mkString)}
 }
