@@ -29,12 +29,18 @@ object WikiParserSpec extends Specification {
 
         }
 
+        """ <pre> is Preformated Text.""" in {
+           WikiParser.preformatted($("<pre>I love \nscala.\n\n</pre>")).get must_== Preformatted("I love \nscala.\n\n")
+        }
+
          """ all text is Sentences.""" in {
-           WikiParser.sentences($("*Headline\nI \"love\" \nscala.\n\n")).get must_== Sentences(List(
+           WikiParser.sentences($("*Headline\nI \"love\" \nscala.\n\n<pre>Hello\n</pre>")).get must_== Sentences(List(
                                                                         Headline(List(Text("Headline"))),
                                                                         Paragraph(List(
                                                                         Line(List(Text("I "), Strong(Text("love")), Text(" "))), 
-                                                                        Line(List(Text("scala.")))))))
+                                                                        Line(List(Text("scala."))))),
+                                                                        Preformatted("Hello\n")
+                                                                        ))
 
         }
 
